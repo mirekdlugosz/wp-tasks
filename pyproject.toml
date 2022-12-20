@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "wp-tasks"
+version = "2022.12.18"
+description = "FIXME"
+authors = ["Mirek Długosz <mirek@mirekdlugosz.com>"]
+license = "FIXME"
+readme = "README.md"
+repository = "https://github.com/mirekdlugosz/wp-tasks"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.28.1"
+typer = "^0.7.0"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+flake8 = "*"
+ipdb = "*"
+ipython = "*"
+pre-commit = "*"
+nox = "*"
+
+[tool.poetry.scripts]
+wp-tasks-run = "wp_tasks.cli:typer_app"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
