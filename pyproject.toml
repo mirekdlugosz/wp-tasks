@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "wp-tasks"
 version = "2022.12.18"
-description = "FIXME"
+description = "Make it easy to perform complex changes in WordPress site"
 authors = ["Mirek Długosz <mirek@mirekdlugosz.com>"]
-license = "FIXME"
+license = "MIT"
 readme = "README.md"
 repository = "https://github.com/mirekdlugosz/wp-tasks"
 
