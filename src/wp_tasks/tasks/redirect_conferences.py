@@ -7,5 +7,6 @@ def run_task(context: WPTasksContext):
         old="http://localhost:8080/conference/cast-2022/",
         new="http://localhost:8080/conference/cast-archive/cast-2022/",
         redirect_group_name="Conferences",
+        exceptions=["http://localhost:8080/conference/cast-2022/test-coach-camp/"],
         context=context,
     )

@@ -1,3 +1,5 @@
+import logging
+
 from wp_tasks.dsl import get_all_page_children
 from wp_tasks.dsl import get_single_page
 from wp_tasks.dsl.plugins.redirection import get_or_create_group
@@ -5,12 +7,17 @@ from wp_tasks.dsl.plugins.redirection import get_redirects_for_source_url
 from wp_tasks.types import WPTasksContext
 
 
+logger = logging.getLogger(__name__)
+
+
 def host_relative_url(full_url: str, host_url: str):
     host_url = host_url.rstrip("/")
     return full_url.removeprefix(host_url)
 
 
-def draft_redirect_pages(old, new, redirect_group_name, context: WPTasksContext):
+def draft_redirect_pages(
+    old, new, redirect_group_name, exceptions, context: WPTasksContext
+):
     api_client = context.api_client
 
     old_pages = get_all_page_children(old, context)
@@ -20,10 +27,25 @@ def draft_redirect_pages(old, new, redirect_group_name, context: WPTasksContext)
 
     for page in old_pages:
         page_id = page.get("id")
+        source_url = host_relative_url(page.get("link"), context.settings.host_url)
+        if exceptions and page_id in exceptions or page.get("link") in exceptions:
+            logger.info(
+                "Skipping page %s [%s]: specified as exception",
+                page_id,
+                source_url,
+            )
+            continue
+
         api_client.post(f"/wp/v2/pages/{page_id}", json={"status": "draft"})
+        logger.info("Set page %s [%s] as a draft", page_id, source_url)
         source_url = host_relative_url(page.get("link"), context.settings.host_url)
 
         if get_redirects_for_source_url(source_url, context):
+            logger.info(
+                "Skipping page %s [%s]: redirection already exists",
+                page_id,
+                source_url,
+            )
             continue
 
         data = {
@@ -43,3 +65,4 @@ def draft_redirect_pages(old, new, redirect_group_name, context: WPTasksContext)
             "group_id": redirection_group.get("id"),
         }
         api_client.post("/redirection/v1/redirect", json=data)
+        logger.info("Created redirection for page %s [%s]", page_id, source_url)
