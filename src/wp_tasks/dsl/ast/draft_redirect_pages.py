@@ -4,6 +4,7 @@ from wp_tasks.dsl import get_all_page_children
 from wp_tasks.dsl import get_single_page
 from wp_tasks.dsl.plugins.redirection import get_or_create_group
 from wp_tasks.dsl.plugins.redirection import get_redirects_for_source_url
+from wp_tasks.dsl.plugins.redirection import get_redirects_for_target_url
 from wp_tasks.types import WPTasksContext
 
 
@@ -47,6 +48,16 @@ def draft_redirect_pages(
                 source_url,
             )
             continue
+
+        if target_redirects := get_redirects_for_target_url(source_url, context):
+            logger.warning(
+                (
+                    "There are redirects pointing at source url %s:\n"
+                    "%s\n\nYou need to handle them manually"
+                ),
+                source_url,
+                target_redirects,
+            )
 
         data = {
             "url": source_url,
